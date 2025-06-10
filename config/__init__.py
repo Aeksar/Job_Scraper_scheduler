@@ -1,2 +1,2 @@
-from .environment import mongo_cfg, rabbit_cfg, NOTIFICATION_DELAY
+from .environment import *
 from .logs import logger

@@ -3,13 +3,10 @@ from pymongo import MongoClient
 from pymongo.database import Database
 from typing import Optional
 from bson.objectid import ObjectId
-    
-"""
-text: str
-city: 
 
-"""
-    
+from config import logger
+ 
+ 
 class SubscribeCollection:
     def __init__(self, client: AsyncIOMotorClient):
         self.client = client
@@ -38,3 +35,9 @@ class HhCollection:
             valid_ids.append(ObjectId(id))
         return await self.collection.find({"_id": {"$in": valid_ids}}, {"_id": 0}).to_list()
     
+    async def get_urls(self) -> list[str]:
+        return await self.collection.distinct("url")
+    
+    async def delete_by_urls(self, urls: list[str]):
+        res = await self.collection.delete_many({"url": {"$in": urls}})
+        logger.info(f"Deleted {res.deleted_count} document by url")

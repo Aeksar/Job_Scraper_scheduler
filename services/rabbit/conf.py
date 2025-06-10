@@ -1,5 +1,7 @@
 import aio_pika
 from aio_pika.abc import AbstractConnection
+from aio_pika import Message
+import json
 
 from config import rabbit_cfg, logger
 
