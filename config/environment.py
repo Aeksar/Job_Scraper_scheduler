@@ -18,12 +18,13 @@ class rabbit_cfg:
     MQ_PARSE_RK = os.getenv("MQ_PARSE_RK")
     MQ_BOT_RK = os.getenv("MQ_BOT_RK")
     MQ_CONSUME_QUEUE = os.getenv("MQ_CONSUME_QUEUE")
-
+    MQ_TTL = int(os.getenv("MQ_TTL"))
     
     @classmethod
     def get_url(cls) -> str:
         return f"amqp://{cls.USER}:{cls.PASSWORD}@{cls.HOST}:{cls.PORT}"
-        
+      
+
         
 class mongo_cfg:
     MONGO_USERNAME=os.getenv("MONGO_INITDB_ROOT_USERNAME")
