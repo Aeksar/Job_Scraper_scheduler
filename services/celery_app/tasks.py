@@ -1,20 +1,18 @@
 import requests
 import json
 from celery import shared_task
-from celery.signals import worker_ready
-import threading
 
-from services.rabbit import sync_send_message, get_sync_connection, setup_sync_rabbit, consumer
-from services.mongo import sync_mongo_client, mongo_client, SubscribeCollection, HhCollection, TaskCollection
-from config import rabbit_cfg, logger, NOTIFICATION_DELAY, CLEAN_DELAY, HH_VACANCIES_BASE_URL, USER_AGENT
-from utils import get_base_message, hh_ids_from_urls  
+from services.rabbit import send_message
+from services.mongo import mongo_client, SubscribeCollection, HhCollection, TaskCollection
+from config import rabbit_cfg, logger,  HH_VACANCIES_BASE_URL, USER_AGENT
+from utils import hh_ids_from_urls  
 
 
 @shared_task(name="notification")
-def async_notification_task():
+def notification_task():
     logger.debug("start notif task")
-    sub_col = SubscribeCollection(sync_mongo_client)
-    task_col = TaskCollection(sync_mongo_client)
+    sub_col = SubscribeCollection(mongo_client)
+    task_col = TaskCollection(mongo_client)
     params = sub_col.get_params()
     for param in params:
         task_id = task_col.add(param)
@@ -27,11 +25,11 @@ def async_notification_task():
             }
         }
         message = json.dumps(body).encode()
-        sync_send_message(message, rabbit_cfg.MQ_PARSE_RK)
+        send_message(message, rabbit_cfg.MQ_PARSE_RK)
         
 @shared_task(name="clean")  
 def clean_task():
-    hh_col = HhCollection(sync_mongo_client)
+    hh_col = HhCollection(mongo_client)
     urls = hh_col.get_urls()
     ids = hh_ids_from_urls(urls)
     headers = {"user-agent": USER_AGENT}
