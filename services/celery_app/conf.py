@@ -1,10 +1,11 @@
 from celery import Celery
 
 
-from config.environment import rabbit_cfg
+from config.environment import rabbit_cfg, NOTIFICATION_DELAY, CLEAN_DELAY
 from services.celery_app.tasks import *
 
-"amqp://user:12568395@127.0.0.1:5672"
+
+
 app = Celery(
     main="celery_app",
     broker=rabbit_cfg.get_url(),
@@ -17,13 +18,13 @@ app.conf.timezone = 'UTC'
 app.conf.beat_schedule = {
     'notification': {
         'task': 'notification',
-        'schedule': 30.0,
+        'schedule': NOTIFICATION_DELAY,
     },
-    # 'clean': {
-    #     'task': 'tasks.add',
-    #     'schedule': 30.0,
-    #     'args': ()
-    # },
+    'clean': {
+        'task': 'clean',
+        'schedule': CLEAN_DELAY,
+        'args': ()
+    },
 }
 
 

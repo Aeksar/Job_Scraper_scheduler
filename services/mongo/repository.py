@@ -1,8 +1,8 @@
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from pymongo import MongoClient
-from pymongo.database import Database
-from typing import Optional
+from datetime import datetime
 from bson.objectid import ObjectId
+from bson.datetime_ms import DatetimeMS
 
 from config import logger
  
@@ -41,3 +41,18 @@ class HhCollection:
     def delete_by_urls(self, urls: list[str]):
         res = self.collection.delete_many({"url": {"$in": urls}})
         logger.info(f"Deleted {res.deleted_count} document by url")
+        
+
+class TaskCollection:
+    def __init__(self, client: MongoClient):
+        self.client = client
+        self.db = self.client["job_name"]
+        self.collection = self.db["search_result"]
+    
+    def add(self, params: dict) -> ObjectId:
+        res = self.collection.insert_one({
+            "status": "pending",
+            "parameters": params,
+            "created_at": DatetimeMS(datetime.now())
+        })
+        return res.inserted_id
