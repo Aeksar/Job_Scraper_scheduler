@@ -4,13 +4,13 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from bson.datetime_ms import DatetimeMS
 
-from config import logger
+from config import logger, mongo_cfg
  
  
 class SubscribeCollection:
     def __init__(self, client: MongoClient):
         self.client = client
-        self.db = self.client["job_name"]
+        self.db = self.client[mongo_cfg.DATABASE]
         self.collection = self.db["subscribe"]
     
     def get_subscribers(self, text: str, city: str) -> list:
@@ -26,7 +26,7 @@ class SubscribeCollection:
     
 class HhCollection:
     def __init__(self, client: MongoClient):
-        self.db = client["job_name"]
+        self.db = client[mongo_cfg.DATABASE]
         self.collection = self.db["hh"]
     
     def find_by_ids(self, ids: list[str]) -> list[dict]:
@@ -46,7 +46,7 @@ class HhCollection:
 class TaskCollection:
     def __init__(self, client: MongoClient):
         self.client = client
-        self.db = self.client["job_name"]
+        self.db = self.client[mongo_cfg.DATABASE]
         self.collection = self.db["search_result"]
     
     def add(self, params: dict) -> ObjectId:

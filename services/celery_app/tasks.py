@@ -16,7 +16,6 @@ def notification_task():
     params = sub_col.get_params()
     for param in params:
         task_id = task_col.add(param)
-        logger.debug(f"Send message to parser with parameters: {param}")
         body = {
             "title": "hh",
             "task_id": str(task_id),
@@ -47,4 +46,3 @@ def clean_task():
     
     logger.info(f"deleted {len(delete_urls)} jobs")
     hh_col.delete_by_urls(delete_urls)
-
